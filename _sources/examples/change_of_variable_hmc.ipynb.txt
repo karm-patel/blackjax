@@ -42,12 +42,12 @@
    "metadata": {},
    "outputs": [],
    "source": [
+    "import arviz as az\n",
     "import jax\n",
     "import jax.numpy as jnp\n",
     "import matplotlib.pyplot as plt\n",
-    "import arviz as az\n",
-    "import seaborn as sns\n",
     "import pandas as pd\n",
+    "import seaborn as sns\n",
     "\n",
     "pd.set_option(\"display.max_rows\", 80)\n",
     "\n",
@@ -70,7 +70,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "ba6c8b88",
+   "id": "af75114a",
    "metadata": {},
    "source": [
     "## Data"
@@ -79,7 +79,7 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "7b7b93a2",
+   "id": "7a115317",
    "metadata": {},
    "outputs": [
     {
@@ -92,13 +92,163 @@
    ],
    "source": [
     "# index of array is type of tumor and value shows number of total people tested.\n",
-    "group_size = jnp.array( [ 20, 20, 20, 20, 20, 20, 20, 19, 19, 19, 19, 18, 18, 17, 20, 20, 20, 20, 19, 19, 18, 18, 25, 24, 23, 20, 20, 20, 20, 20, 20, 10, 49, 19, 46, 27, 17, 49, 47, 20, 20, 13, 48, 50, 20, 20, 20, 20, 20, 20, 20, 48, 19, 19, 19, 22, 46, 49, 20, 20, 23, 19, 22, 20, 20, 20, 52, 46, 47, 24, 14, ], dtype=jnp.float32, )\n",
+    "group_size = jnp.array(\n",
+    "    [\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        19,\n",
+    "        19,\n",
+    "        19,\n",
+    "        19,\n",
+    "        18,\n",
+    "        18,\n",
+    "        17,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        19,\n",
+    "        19,\n",
+    "        18,\n",
+    "        18,\n",
+    "        25,\n",
+    "        24,\n",
+    "        23,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        10,\n",
+    "        49,\n",
+    "        19,\n",
+    "        46,\n",
+    "        27,\n",
+    "        17,\n",
+    "        49,\n",
+    "        47,\n",
+    "        20,\n",
+    "        20,\n",
+    "        13,\n",
+    "        48,\n",
+    "        50,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        48,\n",
+    "        19,\n",
+    "        19,\n",
+    "        19,\n",
+    "        22,\n",
+    "        46,\n",
+    "        49,\n",
+    "        20,\n",
+    "        20,\n",
+    "        23,\n",
+    "        19,\n",
+    "        22,\n",
+    "        20,\n",
+    "        20,\n",
+    "        20,\n",
+    "        52,\n",
+    "        46,\n",
+    "        47,\n",
+    "        24,\n",
+    "        14,\n",
+    "    ],\n",
+    "    dtype=jnp.float32,\n",
+    ")\n",
     "\n",
     "# index of array is type of tumor and value shows number of positve people.\n",
-    "n_of_positives = jnp.array( [ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 5, 2, 5, 3, 2, 7, 7, 3, 3, 2, 9, 10, 4, 4, 4, 4, 4, 4, 4, 10, 4, 4, 4, 5, 11, 12, 5, 5, 6, 5, 6, 6, 6, 6, 16, 15, 15, 9, 4, ], dtype=jnp.float32, )\n",
+    "n_of_positives = jnp.array(\n",
+    "    [\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        0,\n",
+    "        1,\n",
+    "        1,\n",
+    "        1,\n",
+    "        1,\n",
+    "        1,\n",
+    "        1,\n",
+    "        1,\n",
+    "        1,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        2,\n",
+    "        1,\n",
+    "        5,\n",
+    "        2,\n",
+    "        5,\n",
+    "        3,\n",
+    "        2,\n",
+    "        7,\n",
+    "        7,\n",
+    "        3,\n",
+    "        3,\n",
+    "        2,\n",
+    "        9,\n",
+    "        10,\n",
+    "        4,\n",
+    "        4,\n",
+    "        4,\n",
+    "        4,\n",
+    "        4,\n",
+    "        4,\n",
+    "        4,\n",
+    "        10,\n",
+    "        4,\n",
+    "        4,\n",
+    "        4,\n",
+    "        5,\n",
+    "        11,\n",
+    "        12,\n",
+    "        5,\n",
+    "        5,\n",
+    "        6,\n",
+    "        5,\n",
+    "        6,\n",
+    "        6,\n",
+    "        6,\n",
+    "        6,\n",
+    "        16,\n",
+    "        15,\n",
+    "        15,\n",
+    "        9,\n",
+    "        4,\n",
+    "    ],\n",
+    "    dtype=jnp.float32,\n",
+    ")\n",
     "\n",
     "# number of different kind of rat tumors\n",
-    "n_rat_tumors = len(group_size)  "
+    "n_rat_tumors = len(group_size)"
    ]
   },
   {
@@ -123,7 +273,7 @@
    "source": [
     "plt.figure(figsize=(12, 3))\n",
     "plt.bar(range(n_rat_tumors), n_of_positives)\n",
-    "plt.title(\"No. of positives for each tumor type\", fontsize=14);\n",
+    "plt.title(\"No. of positives for each tumor type\", fontsize=14)\n",
     "plt.xlabel(\"tumor type\", fontsize=12)\n",
     "sns.despine()"
    ]
@@ -150,14 +300,14 @@
    "source": [
     "plt.figure(figsize=(14, 4))\n",
     "plt.bar(range(n_rat_tumors), group_size)\n",
-    "plt.title(\"Group size for each tumor type\", fontsize=14);\n",
+    "plt.title(\"Group size for each tumor type\", fontsize=14)\n",
     "plt.xlabel(\"tumor type\", fontsize=12)\n",
     "sns.despine()"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "3dd6bff2",
+   "id": "ba8527d6",
    "metadata": {},
    "source": [
     "## Posterior sampling"
@@ -165,7 +315,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "1d01fd29",
+   "id": "eb8883b9",
    "metadata": {},
    "source": [
     "Now we use Blackjax's NUTS algorithm to get posterior samples of $a$, $b$, and $\\theta$ "
@@ -188,14 +338,18 @@
     "    logprob_thetas = tfd.Beta(a, b).log_prob(thetas).sum()\n",
     "\n",
     "    # loglikelihood of y\n",
-    "    logprob_y = jnp.sum(jax.vmap(lambda y, N, theta: tfd.Binomial(N, probs=theta).log_prob(y))(n_of_positives, group_size, thetas))\n",
+    "    logprob_y = jnp.sum(\n",
+    "        jax.vmap(lambda y, N, theta: tfd.Binomial(N, probs=theta).log_prob(y))(\n",
+    "            n_of_positives, group_size, thetas\n",
+    "        )\n",
+    "    )\n",
     "\n",
     "    return logprob_ab + logprob_thetas + logprob_y"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "0fdeaaac",
+   "id": "de57c637",
    "metadata": {},
    "source": [
     "We take initial parameters from uniform distribution"
@@ -222,6 +376,7 @@
     "rng_key = jax.random.PRNGKey(0)\n",
     "n_params = n_rat_tumors + 2\n",
     "\n",
+    "\n",
     "def init_param_fn(seed):\n",
     "    \"\"\"\n",
     "    initialize a, b & thetas\n",
@@ -233,13 +388,14 @@
     "        \"thetas\": tfd.Uniform(0, 1).sample(n_rat_tumors, seed),\n",
     "    }\n",
     "\n",
+    "\n",
     "init_param = init_param_fn(rng_key)\n",
-    "joint_logprob(init_param) # sanity check"
+    "joint_logprob(init_param)  # sanity check"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "4294765b",
+   "id": "d8450fa2",
    "metadata": {},
    "source": [
     "Now we use blackjax's window adaption algorithm to get NUTS kernel and initial states. Window adaption algorithm will automatically configure `inverse_mass_matrix` and `step size`"
@@ -248,14 +404,14 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "7534fd03",
+   "id": "de8ca68a",
    "metadata": {},
    "outputs": [
     {
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU times: user 18.2 s, sys: 185 ms, total: 18.3 s\n",
+      "CPU times: user 18.1 s, sys: 283 ms, total: 18.4 s\n",
       "Wall time: 18.2 s\n"
      ]
     }
@@ -269,15 +425,17 @@
     "keys = jax.random.split(rng_key, n_chains)\n",
     "init_params = jax.vmap(init_param_fn)(keys)\n",
     "\n",
-    "initial_states = jax.vmap(lambda seed, param: warmup.run(seed,param)[0])(keys, init_params) \n",
+    "initial_states = jax.vmap(lambda seed, param: warmup.run(seed, param)[0])(\n",
+    "    keys, init_params\n",
+    ")\n",
     "\n",
     "# can not vectorize kernel, since it is not jax.numpy array\n",
-    "_, kernel, _ = warmup.run(jax.random.PRNGKey(10),init_param_fn(rng_key))"
+    "_, kernel, _ = warmup.run(jax.random.PRNGKey(10), init_param_fn(rng_key))"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "353483d8",
+   "id": "18674aa7",
    "metadata": {},
    "source": [
     "Now we write inference loop for multiple chains"
@@ -286,16 +444,17 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "7b93d1c2",
+   "id": "e9dd4b95",
    "metadata": {},
    "outputs": [],
    "source": [
-    "def inference_loop_multiple_chains(rng_key, kernel, initial_states, num_samples, num_chains):\n",
-    "    \n",
+    "def inference_loop_multiple_chains(\n",
+    "    rng_key, kernel, initial_states, num_samples, num_chains\n",
+    "):\n",
     "    @jax.jit\n",
     "    def one_step(states, rng_key):\n",
     "        keys = jax.random.split(rng_key, num_chains)\n",
-    "        states, infos = jax.vmap(kernel)(keys, states) \n",
+    "        states, infos = jax.vmap(kernel)(keys, states)\n",
     "        return states, (states, infos)\n",
     "\n",
     "    keys = jax.random.split(rng_key, num_samples)\n",
@@ -314,21 +473,23 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU times: user 7.84 s, sys: 133 ms, total: 7.97 s\n",
-      "Wall time: 7.89 s\n"
+      "CPU times: user 7.79 s, sys: 55.5 ms, total: 7.85 s\n",
+      "Wall time: 7.77 s\n"
      ]
     }
    ],
    "source": [
     "%%time\n",
     "n_samples = 1000\n",
-    "states, infos = inference_loop_multiple_chains(rng_key, kernel, initial_states, n_samples, n_chains)"
+    "states, infos = inference_loop_multiple_chains(\n",
+    "    rng_key, kernel, initial_states, n_samples, n_chains\n",
+    ")"
    ]
   },
   {
    "cell_type": "code",
    "execution_count": 10,
-   "id": "0bf7605a",
+   "id": "daf8c6c4",
    "metadata": {},
    "outputs": [
     {
@@ -348,7 +509,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "a4b51587",
+   "id": "53bb458a",
    "metadata": {},
    "source": [
     "## Arviz plots"
@@ -356,7 +517,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "4d736359",
+   "id": "8fa13f00",
    "metadata": {},
    "source": [
     "We have all our posterior samples stored in `states.position` dictionary and `infos` store additional information like acceptance probability, divergence, etc. Now, we can use certain diagnostics to judge if our MCMC samples are converged on stationary distribution. Some of widely diagnostics are trace plots, potential scale reduction factor (R hat), divergences, etc. `Arviz` library provides quicker ways to anaylze these diagnostics. We can use `arviz.summary()` and `arviz_plot_trace()`, but these functions take specific format (arviz's trace) as a input. So now first we will convert `states` and `infos` into `trace`."
@@ -365,35 +526,41 @@
   {
    "cell_type": "code",
    "execution_count": 11,
-   "id": "3c4bd5bf",
+   "id": "024b09be",
    "metadata": {},
    "outputs": [],
    "source": [
     "def arviz_trace_from_states(states, info, burn_in=0):\n",
     "\n",
-    "    if isinstance(states.position, jnp.DeviceArray):  #if states.position is array of samples \n",
+    "    if isinstance(\n",
+    "        states.position, jnp.DeviceArray\n",
+    "    ):  # if states.position is array of samples\n",
     "        ndims = jnp.ndim(states.position)\n",
     "        if ndims > 1:\n",
-    "            samples = {\"samples\":jnp.swapaxes(states.position,0,1)}\n",
+    "            samples = {\"samples\": jnp.swapaxes(states.position, 0, 1)}\n",
     "            divergence = jnp.swapaxes(info.is_divergent, 0, 1)\n",
     "        else:\n",
-    "            samples = jnp.swapaxes(states.position,0,1)\n",
+    "            samples = jnp.swapaxes(states.position, 0, 1)\n",
     "            divergence = info.is_divergent, 0, 1\n",
-    "        \n",
-    "    else: # if states.position is dict \n",
-    "        samples = {}        \n",
+    "\n",
+    "    else:  # if states.position is dict\n",
+    "        samples = {}\n",
     "        for param in states.position.keys():\n",
     "            ndims = len(states.position[param].shape)\n",
     "            if ndims >= 2:\n",
-    "                samples[param] = jnp.swapaxes(states.position[param], 0, 1)[:, burn_in:]  # swap n_samples and n_chains\n",
+    "                samples[param] = jnp.swapaxes(states.position[param], 0, 1)[\n",
+    "                    :, burn_in:\n",
+    "                ]  # swap n_samples and n_chains\n",
     "                divergence = jnp.swapaxes(info.is_divergent[burn_in:], 0, 1)\n",
     "\n",
     "            if ndims == 1:\n",
     "                divergence = info.is_divergent\n",
     "                samples[param] = states.position[param]\n",
-    "                \n",
+    "\n",
     "    trace_posterior = az.convert_to_inference_data(samples)\n",
-    "    trace_sample_stats = az.convert_to_inference_data({\"diverging\": divergence}, group=\"sample_stats\")\n",
+    "    trace_sample_stats = az.convert_to_inference_data(\n",
+    "        {\"diverging\": divergence}, group=\"sample_stats\"\n",
+    "    )\n",
     "    trace = az.concat(trace_posterior, trace_sample_stats)\n",
     "    return trace"
    ]
@@ -1485,7 +1652,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "d78691ad",
+   "id": "e7ef709d",
    "metadata": {},
    "source": [
     "**r_hat** is showing measure of each chain is converged to stationary distribution. **r_hat** should be less than or equal to 1.01, here we get r_hat far from 1.01 for each latent sample."
@@ -1517,7 +1684,7 @@
   },
   {
    "cell_type": "markdown",
-   "id": "eb131cad",
+   "id": "0d072905",
    "metadata": {},
    "source": [
     "Trace plots also looks terrible and does not seems to be converged! Also, black band shows that every sample is diverged from original distribution. So **what's wrong happeing here?**\n",
@@ -1544,6 +1711,7 @@
     "transform_fn = jax.nn.sigmoid\n",
     "jacobian_fn = lambda logit: jnp.abs(jax.jacfwd(transform_fn)(logit))\n",
     "\n",
+    "\n",
     "def joint_logprob_change_of_var(params):\n",
     "    a, b, logits = params[\"a\"], params[\"b\"], params[\"logits\"]\n",
     "\n",
@@ -1558,14 +1726,18 @@
     "    logprob_thetas = tfd.Beta(a, b).log_prob(thetas).sum()\n",
     "\n",
     "    # loglikelihood of y\n",
-    "    logprob_y = jnp.sum(jax.vmap(lambda y, N, theta: tfd.Binomial(N, probs=theta).log_prob(y))(n_of_positives, group_size, thetas))\n",
+    "    logprob_y = jnp.sum(\n",
+    "        jax.vmap(lambda y, N, theta: tfd.Binomial(N, probs=theta).log_prob(y))(\n",
+    "            n_of_positives, group_size, thetas\n",
+    "        )\n",
+    "    )\n",
     "\n",
     "    return logprob_ab + logprob_thetas + logprob_y + log_det_jacob"
    ]
   },
   {
    "cell_type": "markdown",
-   "id": "f0dd8958",
+   "id": "5e69e1dc",
    "metadata": {},
    "source": [
     "except change of variable in `joint_logprob()` function, everthing will remain same"
@@ -1573,7 +1745,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 16,
+   "execution_count": 15,
    "id": "58e357c8",
    "metadata": {},
    "outputs": [
@@ -1583,7 +1755,7 @@
        "DeviceArray(-1095.3221, dtype=float32)"
       ]
      },
-     "execution_count": 16,
+     "execution_count": 15,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -1591,6 +1763,7 @@
    "source": [
     "rng_key = jax.random.PRNGKey(0)\n",
     "n_params = n_rat_tumors + 2\n",
+    "\n",
     "\n",
     "def init_param_fn(seed):\n",
     "    \"\"\"\n",
@@ -1605,12 +1778,12 @@
     "\n",
     "\n",
     "init_param = init_param_fn(rng_key)\n",
-    "joint_logprob_change_of_var(init_param) # sanity check"
+    "joint_logprob_change_of_var(init_param)  # sanity check"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 17,
+   "execution_count": 16,
    "id": "73ae85b5",
    "metadata": {},
    "outputs": [
@@ -1618,8 +1791,8 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU times: user 16.4 s, sys: 228 ms, total: 16.6 s\n",
-      "Wall time: 16.4 s\n"
+      "CPU times: user 15.8 s, sys: 334 ms, total: 16.1 s\n",
+      "Wall time: 15.9 s\n"
      ]
     }
    ],
@@ -1632,15 +1805,17 @@
     "keys = jax.random.split(rng_key, n_chains)\n",
     "init_params = jax.vmap(init_param_fn)(keys)\n",
     "\n",
-    "initial_states = jax.vmap(lambda seed, param: warmup.run(seed,param)[0])(keys, init_params) \n",
+    "initial_states = jax.vmap(lambda seed, param: warmup.run(seed, param)[0])(\n",
+    "    keys, init_params\n",
+    ")\n",
     "\n",
     "# can not vectorize kernel, since it is not jax.numpy array\n",
-    "_, kernel, _ = warmup.run(jax.random.PRNGKey(10),init_param_fn(rng_key))"
+    "_, kernel, _ = warmup.run(jax.random.PRNGKey(10), init_param_fn(rng_key))"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 18,
+   "execution_count": 17,
    "id": "ef6bf315",
    "metadata": {},
    "outputs": [
@@ -1648,32 +1823,34 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "CPU times: user 8.35 s, sys: 128 ms, total: 8.48 s\n",
-      "Wall time: 8.4 s\n"
+      "CPU times: user 8.23 s, sys: 137 ms, total: 8.36 s\n",
+      "Wall time: 8.28 s\n"
      ]
     }
    ],
    "source": [
     "%%time\n",
     "n_samples = 1000\n",
-    "states, infos = inference_loop_multiple_chains(rng_key, kernel, initial_states, n_samples, n_chains)"
+    "states, infos = inference_loop_multiple_chains(\n",
+    "    rng_key, kernel, initial_states, n_samples, n_chains\n",
+    ")"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 19,
+   "execution_count": 18,
    "id": "159e2db4",
    "metadata": {},
    "outputs": [],
    "source": [
     "# convert logits samples to theta samples\n",
     "states.position[\"thetas\"] = jax.nn.sigmoid(states.position[\"logits\"])\n",
-    "del states.position[\"logits\"] # delete logits"
+    "del states.position[\"logits\"]  # delete logits"
    ]
   },
   {
    "cell_type": "code",
-   "execution_count": 20,
+   "execution_count": 19,
    "id": "10c90b6b",
    "metadata": {
     "scrolled": false
@@ -2744,7 +2921,7 @@
        "thetas[70]    2832.0   1.00  "
       ]
      },
-     "execution_count": 20,
+     "execution_count": 19,
      "metadata": {},
      "output_type": "execute_result"
     }
@@ -2758,7 +2935,7 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 21,
+   "execution_count": 20,
    "id": "00cccd84",
    "metadata": {},
    "outputs": [
@@ -2782,8 +2959,8 @@
   },
   {
    "cell_type": "code",
-   "execution_count": 22,
-   "id": "0278c619",
+   "execution_count": 21,
+   "id": "d2877d3d",
    "metadata": {},
    "outputs": [
     {
@@ -2800,19 +2977,11 @@
   },
   {
    "cell_type": "markdown",
-   "id": "16bde249",
+   "id": "9296d960",
    "metadata": {},
    "source": [
     "We can see that **r_hat** is less than or equal to 1.01 for each latent variable, trace plots looks converged to stationary distribution, and only few samples are diverged."
    ]
-  },
-  {
-   "cell_type": "code",
-   "execution_count": null,
-   "id": "7b7d78ca",
-   "metadata": {},
-   "outputs": [],
-   "source": []
   }
  ],
  "metadata": {
